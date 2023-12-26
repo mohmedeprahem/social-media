@@ -17,7 +17,6 @@ export const databaseProviders = [{
       dialect: 'postgres',
     });
     sequelize.addModels([User]);
-    await sequelize.sync();
     return sequelize;
   },
 }];
