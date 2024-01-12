@@ -16,6 +16,7 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
+        allowNull: false,
         unique: true
       },
       isEmailPrivate: {
@@ -28,11 +29,11 @@ module.exports = {
       },
       password: {
         type: Sequelize.STRING,
-        required: true
+        allowNull: false
       },
       fullName: {
         type: Sequelize.STRING,
-        required: true
+        allowNull: false
       },
       gender: {
         type: Sequelize.STRING,
@@ -41,7 +42,7 @@ module.exports = {
       },
       dateOfBirth: {
         type: Sequelize.DATE,
-        required: true
+        allowNull: false
       },
       createdAt: {
         type: Sequelize.DATE,
