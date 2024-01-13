@@ -1,10 +1,15 @@
-import { IsEmail, IsNotEmpty, MaxLength, IsEnum, IsDate, Validate  } from 'class-validator';
-import { IsDateOfBirthValid } from '../../../shared/validators/is-date-of-birth-valid.validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  MaxLength,
+  IsEnum,
+  IsDate,
+  Validate,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class CreateUserDto {
-
   @ApiProperty()
   @IsNotEmpty()
   @MaxLength(255, { message: 'Full name must not exceed 255 characters' })
@@ -24,7 +29,9 @@ export class CreateUserDto {
   @ApiProperty({
     example: 'Male',
   })
-  @IsEnum(['Male', 'Female'], { message: 'Gender must be either Male or Female' })
+  @IsEnum(['Male', 'Female'], {
+    message: 'Gender must be either Male or Female',
+  })
   @IsNotEmpty({ message: 'Gender must not be empty' })
   gender: string;
 
