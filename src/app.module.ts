@@ -3,14 +3,18 @@ import { AuthModule } from './modules/auth/auth.module';
 import { User } from './database/models/User.entity';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Utils } from './shared/helpers/utils.helper';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     SequelizeModule.forRoot({
       ...Utils.getDatabaseKeys(process.env.NODE_ENV),
       models: [User],
     }),
-    AuthModule
+    AuthModule,
   ],
   controllers: [],
   providers: [],
