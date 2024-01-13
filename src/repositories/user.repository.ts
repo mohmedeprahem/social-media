@@ -10,11 +10,20 @@ export class UserRepository {
   ) {}
 
   async create(user: User): Promise<boolean> {
-    try {
-      await this.userModel.create({...user});
-      return true;
-    } catch (error) {
-      return false;
-    }
+    await this.userModel.create({ ...user });
+    return true;
+  }
+
+  async findByEmail(email: string): Promise<User> {
+    return await this.userModel.findOne({ where: { email } });
+  }
+
+  async updateUserById(user: User): Promise<boolean> {
+    await this.userModel.update(user, {
+      where: {
+        id: user.id,
+      },
+    });
+    return true;
   }
 }
