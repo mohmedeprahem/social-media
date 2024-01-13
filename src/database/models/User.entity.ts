@@ -10,7 +10,7 @@ export class User extends Model {
   @Column({
     unique: true
   })
-  email: number;
+  email: string;
 
   @Column({
     defaultValue: false
