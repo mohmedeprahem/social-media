@@ -14,8 +14,6 @@ export class PasswordService {
     password: string,
     correctPassword: string,
   ): Promise<boolean> {
-    return (await bcrypt.compare(password, correctPassword))
-      ? true
-      : false;
+    return (await bcrypt.compare(password, correctPassword)) ? true : false;
   }
 }

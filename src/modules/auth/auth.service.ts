@@ -1,11 +1,11 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/createUserDto.dto';
 import { baseResponseDto } from 'src/shared/dto/baseResponse.dto';
-import { UserRepository } from '../../repositories/user.repository';
+import { UserRepository } from '../../database/repositories/user.repository';
 import { plainToClass } from 'class-transformer';
 import { User } from '../../database/models/User.entity';
-import { PasswordService } from '../../shared/helpers/passwordService.helper';
-import { MailService } from '../mail/mail.service';
+import { PasswordService } from '../../utils/passwordService.util';
+import { MailService } from '../../utils/mail/mail.service';
 import { CreateUserError } from 'src/shared/errors/create-user-error';
 
 @Injectable()

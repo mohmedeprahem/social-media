@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { UserService } from './auth.service';
-import { UserRepository } from '../../repositories/user.repository';
-import { PasswordService } from '../../shared/helpers/passwordService.helper';
+import { UserRepository } from '../../database/repositories/user.repository';
+import { PasswordService } from '../../utils/passwordService.util';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from '../../database/models/User.entity';
-import { MailModule } from '../mail/mail.module';
+import { MailModule } from '../../utils/mail/mail.module';
 
 @Module({
   imports: [SequelizeModule.forFeature([User]), MailModule],
