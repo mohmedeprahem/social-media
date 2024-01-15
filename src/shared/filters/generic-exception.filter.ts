@@ -15,11 +15,15 @@ export class GenericExceptionFilter implements ExceptionFilter {
 
     const status =
       exception instanceof HttpException ? exception.getStatus() : 500;
+    const message =
+      exception instanceof HttpException
+        ? exception.message
+        : 'Internal Server Error';
 
     response.status(status).json({
       success: false,
       status,
-      message: 'Internal Server Error',
+      message,
     });
   }
 }
