@@ -26,4 +26,8 @@ export class UserRepository {
     });
     return true;
   }
+
+  async findUser(where: object): Promise<User> {
+    return await this.userModel.findOne(where);
+  }
 }
