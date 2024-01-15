@@ -7,6 +7,7 @@ import { User } from '../../database/models/User.entity';
 import { PasswordService } from '../../utils/passwordService.util';
 import { MailService } from '../../utils/mail/mail.service';
 import { CreateUserError } from 'src/shared/errors/create-user-error';
+import { OtpService } from '../../utils/otpService.util';
 
 @Injectable()
 export class UserService {
@@ -24,7 +25,7 @@ export class UserService {
     user.password = await this._passwordService.hashPassword(password);
 
     // Create OTP code
-    user.otpCode = Math.floor(100000 + Math.random() * 900000);
+    user.otpCode = OtpService.generateOtp();
 
     // Set OTP creation date
     user.otpCreatedAt = new Date();
