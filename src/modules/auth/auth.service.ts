@@ -1,4 +1,10 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/createUserDto.dto';
 import { baseResponseDto } from 'src/shared/dto/baseResponse.dto';
 import { UserRepository } from '../../database/repositories/user.repository';
@@ -8,6 +14,7 @@ import { PasswordService } from '../../utils/passwordService.util';
 import { MailService } from '../../utils/mail/mail.service';
 import { CreateUserError } from 'src/shared/errors/create-user-error';
 import { OtpService } from '../../utils/otpService.util';
+import { VerifyUserDto } from './dto/verifyUserDto.dto';
 
 @Injectable()
 export class UserService {
@@ -68,5 +75,38 @@ export class UserService {
       success: true,
       isOTPSent: true,
     };
+  }
+
+  async verifyAccount(verifyUserDto: VerifyUserDto) {
+    const { email, otpCode, isNewEmail } = verifyUserDto;
+    let user: User;
+    user = await this._userRepository.findUser({ email });
+
+    if (!isNewEmail && !user) throw new NotFoundException('User not found');
+
+    if (isNewEmail && user)
+      throw new UnauthorizedException('Email already taken');
+
+    if (isNewEmail && !user) {
+      user = await this._userRepository.findUser({
+        newEmail: email,
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+    }
+
+    if (user.otpCode !== otpCode || user.otpCreatedAt < new Date())
+      throw new BadRequestException('Invalid or expired OTP code');
+
+    user.otpCode = null;
+    user.isVerified = true;
+    user.email = email;
+    user.newEmail = null;
+
+    await this._userRepository.updateUserById({
+      ...user.dataValues,
+    });
   }
 }
