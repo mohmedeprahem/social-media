@@ -1,5 +1,5 @@
 import { join } from 'path';
-const config = require(join(__dirname, '../../config/database.config'));
+const config = require(join(__dirname, '../../dist/config/database.config.js'));
 
 export class ServiceKeys {
   public static getDatabaseKeys(env: string): object {

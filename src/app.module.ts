@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module';
 import { User } from './database/models/User.entity';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { ServiceKeys } from './utils/serviceKeys.utils';
+import { ServiceKeys } from './utils/serviceKeys.util';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
