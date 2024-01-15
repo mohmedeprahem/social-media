@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../models/User.entity';
+import { WhereOptions } from 'sequelize';
 
 @Injectable()
 export class UserRepository {
@@ -27,7 +28,7 @@ export class UserRepository {
     return true;
   }
 
-  async findUser(where: object): Promise<User> {
-    return await this.userModel.findOne(where);
+  async findUser(condition: WhereOptions<any>): Promise<User> {
+    return await this.userModel.findOne({ where: condition });
   }
 }
