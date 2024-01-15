@@ -6,7 +6,6 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/createUserDto.dto';
-import { baseResponseDto } from 'src/shared/dto/baseResponse.dto';
 import { UserRepository } from '../../database/repositories/user.repository';
 import { plainToClass } from 'class-transformer';
 import { User } from '../../database/models/User.entity';
