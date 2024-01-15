@@ -3,17 +3,17 @@ import { Table, Column, Model } from 'sequelize-typescript';
 @Table({ tableName: 'users' })
 export class User extends Model {
   @Column({
-    unique: true
+    unique: true,
   })
   uuid: string;
 
   @Column({
-    unique: true
+    unique: true,
   })
   email: string;
 
   @Column({
-    defaultValue: false
+    defaultValue: false,
   })
   isEmailPrivate: boolean;
 
@@ -27,7 +27,7 @@ export class User extends Model {
   fullName: string;
 
   @Column({
-    values: ['male', 'female']
+    values: ['male', 'female'],
   })
   gender: string;
 
@@ -41,24 +41,23 @@ export class User extends Model {
   updatedAt: Date;
 
   @Column
-  otpCode?: number;
+  otpCode?: string;
 
   @Column
   otpCreatedAt?: Date;
 
   @Column({
-    defaultValue: false
+    defaultValue: false,
   })
   isVerified: boolean;
 
   @Column({
-    defaultValue: 0
+    defaultValue: 0,
   })
   likeCounter: number;
 
   @Column({
-    defaultValue: 0
+    defaultValue: 0,
   })
   commentCounter: number;
-
 }
