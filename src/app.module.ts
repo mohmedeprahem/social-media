@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module';
 import { User } from './database/models/User.entity';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Utils } from './utils/utils';
+import { ServiceKeys } from './utils/serviceKeys.utils';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -11,7 +11,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
     }),
     SequelizeModule.forRoot({
-      ...Utils.getDatabaseKeys(process.env.NODE_ENV),
+      ...ServiceKeys.getDatabaseKeys(process.env.NODE_ENV),
       models: [User],
     }),
     AuthModule,
