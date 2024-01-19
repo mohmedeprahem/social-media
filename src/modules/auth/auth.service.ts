@@ -15,6 +15,7 @@ import { CreateUserError } from 'src/shared/errors/create-user-error';
 import { OtpService } from '../../utils/otpService.util';
 import { VerifyUserDto } from './dto/verifyUserDto.dto';
 import { JWTService } from '../../utils/jwtService.util';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -29,17 +30,13 @@ export class UserService {
     const { email, password } = createUserDto;
     const user = plainToClass(User, createUserDto);
 
-    // Hash password
-    user.password = await this._passwordService.hashPassword(password);
-
-    // Create OTP code
     user.otpCode = OtpService.generateOtp();
 
-    // Set OTP creation date
     user.otpCreatedAt = new Date();
 
-    // Check if email is already in use
-    const existingUser = await this._userRepository.findByEmail(email);
+    const existingUser = await this._userRepository.findUser({
+      email,
+    });
 
     if (existingUser) {
       if (existingUser.isVerified) {
@@ -54,7 +51,6 @@ export class UserService {
         throw new Error('Error updating user');
       }
 
-      // Send OTP email
       await this._mailService.sendUserConfirmation(
         user,
         user.otpCode.toString(),
@@ -62,6 +58,9 @@ export class UserService {
 
       throw new CreateUserError('User already existed', true);
     }
+
+    user.password = await this._passwordService.hashPassword(password);
+    user.uuid = uuidv4();
 
     const userCreated = await this._userRepository.create(user.dataValues);
 
