@@ -60,4 +60,7 @@ export class User extends Model {
     defaultValue: 0,
   })
   commentCounter: number;
+
+  @Column
+  refreshToken?: string;
 }
