@@ -30,23 +30,22 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto) {
     const { email, password } = createUserDto;
-    const user = plainToClass(User, createUserDto);
-
-    user.otpCode = OtpService.generateOtp();
-
-    user.otpCreatedAt = new Date();
-
     const existingUser = await this._userRepository.findUser({
       email,
     });
+
+    const otpCode = OtpService.generateOtp();
 
     if (existingUser) {
       if (existingUser.isVerified) {
         throw new CreateUserError('User already existed', false);
       }
 
+      existingUser.otpCode = otpCode;
+      existingUser.otpCreatedAt = new Date();
+
       const userUpdated = await this._userRepository.updateUserById(
-        user.dataValues,
+        existingUser.dataValues,
       );
 
       if (!userUpdated) {
@@ -54,35 +53,41 @@ export class UserService {
       }
 
       await this._mailService.sendUserConfirmation(
+        existingUser,
+        existingUser.otpCode.toString(),
+      );
+
+      throw new CreateUserError('User already existed', true);
+    } else {
+      let user = plainToClass(User, createUserDto);
+      user.otpCode = otpCode;
+      user.otpCreatedAt = new Date();
+      user.password = await this._passwordService.hashPassword(password);
+      user.uuid = uuidv4();
+
+      const userCreated = await this._userRepository.create(user.dataValues);
+
+      if (!userCreated) {
+        throw new Error('Error creating user');
+      }
+
+      await this._mailService.sendUserConfirmation(
         user,
         user.otpCode.toString(),
       );
 
-      throw new CreateUserError('User already existed', true);
+      return {
+        success: true,
+        isOTPSent: true,
+      };
     }
-
-    user.password = await this._passwordService.hashPassword(password);
-    user.uuid = uuidv4();
-
-    const userCreated = await this._userRepository.create(user.dataValues);
-
-    if (!userCreated) {
-      throw new Error('Error creating user');
-    }
-
-    // Send OTP email
-    await this._mailService.sendUserConfirmation(user, user.otpCode.toString());
-
-    return {
-      success: true,
-      isOTPSent: true,
-    };
   }
 
   async verifyAccount(verifyUserDto: VerifyUserDto) {
     const { email, otpCode, isNewEmail } = verifyUserDto;
     let user: User;
     user = await this._userRepository.findUser({ email });
+    console.log(user);
 
     if (!isNewEmail && !user) throw new NotFoundException('User not found');
 
@@ -115,7 +120,7 @@ export class UserService {
     user.newEmail = null;
 
     const jwtToken = await this._jwtService.generateTokens({
-      sub: user.id,
+      sub: user.uuid,
       email: user.email,
     });
 
