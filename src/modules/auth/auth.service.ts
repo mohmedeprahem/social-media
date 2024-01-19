@@ -113,15 +113,18 @@ export class UserService {
     user.email = email;
     user.newEmail = null;
 
-    await this._userRepository.updateUserById({
-      ...user.dataValues,
-    });
-
     const jwtToken = await this._jwtService.generateTokens({
       sub: user.id,
       email: user.email,
     });
 
+    user.refreshToken = await this._jwtService.hashRefreshToken(
+      jwtToken.refreshToken,
+    );
+
+    await this._userRepository.updateUserById({
+      ...user.dataValues,
+    });
     return jwtToken;
   }
 }
