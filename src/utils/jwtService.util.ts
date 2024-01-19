@@ -2,6 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'src/modules/auth/types';
 import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class JWTService {
@@ -10,7 +11,6 @@ export class JWTService {
     private config: ConfigService,
   ) {}
 
-  // generate refresh and access tokens
   async generateTokens(payload: JwtPayload) {
     const accessToken = await this._jwtService.signAsync(payload, {
       secret: this.config.get('JWT_AT_SECRET'),
@@ -25,5 +25,11 @@ export class JWTService {
       accessToken,
       refreshToken,
     };
+  }
+
+  // hash refresh token
+  async hashRefreshToken(refreshToken: string) {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(refreshToken, salt);
   }
 }
