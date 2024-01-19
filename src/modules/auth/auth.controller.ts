@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, UseFilters } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseFilters, Res } from '@nestjs/common';
 import { CreateUserDto } from './dto/createUserDto.dto';
 import { UserService } from './auth.service';
 import { ApiTags, ApiBody } from '@nestjs/swagger';
 import { CreateUserExceptionFilter } from 'src/shared/filters/create-user-exception.filter';
 import { VerifyUserDto } from './dto/verifyUserDto.dto';
+import { CookieService, HeaderService } from 'src/utils';
 
 @ApiTags('User')
 @Controller('api/v1/auth')
@@ -34,13 +35,17 @@ export class AuthController {
     type: VerifyUserDto,
     description: 'Json structure for user object',
   })
-  async verifyAccount(@Body() body: VerifyUserDto) {
-    await this._userService.verifyAccount(body);
+  async verifyAccount(@Body() body: VerifyUserDto, @Res() res) {
+    const jwtTokens = await this._userService.verifyAccount(body);
 
-    return {
+    CookieService.setRefreshTokenCookie(res, jwtTokens.refreshToken);
+
+    HeaderService.setJwtHeader(res, jwtTokens.accessToken);
+
+    res.status(200).json({
       success: true,
       status: 200,
       message: 'User verified successfully',
-    };
+    });
   }
 }
