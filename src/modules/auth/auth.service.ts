@@ -14,6 +14,7 @@ import { MailService } from '../../utils/mail/mail.service';
 import { CreateUserError } from 'src/shared/errors/create-user-error';
 import { OtpService } from '../../utils/otpService.util';
 import { VerifyUserDto } from './dto/verifyUserDto.dto';
+import { JWTService } from '../../utils/jwtService.util';
 
 @Injectable()
 export class UserService {
@@ -21,6 +22,7 @@ export class UserService {
     private readonly _userRepository: UserRepository,
     private readonly _passwordService: PasswordService,
     private readonly _mailService: MailService,
+    private readonly _jwtService: JWTService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -96,7 +98,14 @@ export class UserService {
       }
     }
 
-    if (user.otpCode !== otpCode || user.otpCreatedAt < new Date())
+    const expirationTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+    const currentTime = new Date().getTime();
+    const tokenCreationTime = user.otpCreatedAt.getTime();
+
+    if (
+      user.otpCode !== otpCode ||
+      currentTime - tokenCreationTime > expirationTime
+    )
       throw new BadRequestException('Invalid or expired OTP code');
 
     user.otpCode = null;
@@ -107,5 +116,12 @@ export class UserService {
     await this._userRepository.updateUserById({
       ...user.dataValues,
     });
+
+    const jwtToken = await this._jwtService.generateTokens({
+      sub: user.id,
+      email: user.email,
+    });
+
+    return jwtToken;
   }
 }
