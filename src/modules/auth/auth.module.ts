@@ -2,15 +2,19 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { UserService } from './auth.service';
 import { UserRepository } from '../../database/repositories/user.repository';
-import { PasswordService } from '../../utils/passwordService.util';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from '../../database/models/User.entity';
-import { MailModule } from '../../utils/mail/mail.module';
+import { JWTService, MailModule, PasswordService } from 'src/utils';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [SequelizeModule.forFeature([User]), MailModule],
+  imports: [
+    SequelizeModule.forFeature([User]),
+    MailModule,
+    JwtModule.register({}),
+  ],
   controllers: [AuthController],
-  providers: [UserRepository, UserService, PasswordService],
+  providers: [UserRepository, UserService, PasswordService, JWTService],
   exports: [SequelizeModule],
 })
 export class AuthModule {}
