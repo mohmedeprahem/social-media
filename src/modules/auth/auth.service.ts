@@ -9,13 +9,15 @@ import { CreateUserDto } from './dto/createUserDto.dto';
 import { UserRepository } from '../../database/repositories/user.repository';
 import { plainToClass } from 'class-transformer';
 import { User } from '../../database/models/User.entity';
-import { PasswordService } from '../../utils/passwordService.util';
-import { MailService } from '../../utils/mail/mail.service';
 import { CreateUserError } from 'src/shared/errors/create-user-error';
-import { OtpService } from '../../utils/otpService.util';
 import { VerifyUserDto } from './dto/verifyUserDto.dto';
-import { JWTService } from '../../utils/jwtService.util';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  JWTService,
+  OtpService,
+  MailService,
+  PasswordService,
+} from 'src/utils';
 
 @Injectable()
 export class UserService {
