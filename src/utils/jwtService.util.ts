@@ -14,11 +14,11 @@ export class JWTService {
   async generateTokens(payload: JwtPayload) {
     const accessToken = await this._jwtService.signAsync(payload, {
       secret: this.config.get('JWT_AT_SECRET'),
-      expiresIn: '15m',
+      expiresIn: this.config.get('JWT_AT_EXPIRES_IN'),
     });
     const refreshToken = await this._jwtService.signAsync(payload, {
       secret: this.config.get('JWT_RT_SECRET'),
-      expiresIn: '7d',
+      expiresIn: this.config.get('JWT_RT_EXPIRES_IN'),
     });
 
     return {
