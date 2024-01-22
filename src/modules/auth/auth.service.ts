@@ -4,6 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
   BadRequestException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/createUserDto.dto';
 import { UserRepository } from '../../database/repositories/user.repository';
@@ -18,6 +19,7 @@ import {
   MailService,
   PasswordService,
 } from 'src/utils';
+import { LoginDto } from './dto';
 
 @Injectable()
 export class UserService {
@@ -104,7 +106,7 @@ export class UserService {
       }
     }
 
-    const expirationTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+    const expirationTime = 5 * 60 * 1000;
     const currentTime = new Date().getTime();
     const tokenCreationTime = user.otpCreatedAt.getTime();
 
@@ -131,6 +133,57 @@ export class UserService {
     await this._userRepository.updateUserById({
       ...user.dataValues,
     });
+    return jwtToken;
+  }
+
+  async login(loginDto: LoginDto) {
+    const { email, password } = loginDto;
+
+    const user = await this._userRepository.findUser({
+      email,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!user.isVerified) {
+      const otpCode = OtpService.generateOtp();
+      user.otpCode = otpCode;
+      user.otpCreatedAt = new Date();
+      await this._userRepository.updateUserById({
+        ...user.dataValues,
+      });
+
+      await this._mailService.sendUserConfirmation(
+        user,
+        user.otpCode.toString(),
+      );
+      throw new UnprocessableEntityException("User isn't verified");
+    }
+
+    const isPasswordValid = await this._passwordService.comparePassword(
+      password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new BadRequestException('Bad request');
+    }
+
+    const jwtToken = await this._jwtService.generateTokens({
+      sub: user.uuid,
+      email: user.email,
+    });
+
+    user.refreshToken = await this._jwtService.hashRefreshToken(
+      jwtToken.refreshToken,
+    );
+
+    await this._userRepository.updateUserById({
+      ...user.dataValues,
+    });
+
     return jwtToken;
   }
 }
