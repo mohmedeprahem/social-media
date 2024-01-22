@@ -6,6 +6,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from '../../database/models/User.entity';
 import { JWTService, MailModule, PasswordService } from 'src/utils';
 import { JwtModule } from '@nestjs/jwt';
+import { AtStrategy, RtStrategy } from './strategies';
 
 @Module({
   imports: [
@@ -14,7 +15,14 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.register({}),
   ],
   controllers: [AuthController],
-  providers: [UserRepository, UserService, PasswordService, JWTService],
+  providers: [
+    UserRepository,
+    UserService,
+    PasswordService,
+    JWTService,
+    AtStrategy,
+    RtStrategy,
+  ],
   exports: [SequelizeModule],
 })
 export class AuthModule {}
