@@ -186,4 +186,20 @@ export class UserService {
 
     return jwtToken;
   }
+
+  async logout(userUuid: string) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new Error();
+    }
+
+    user.refreshToken = null;
+
+    await this._userRepository.updateUserById({
+      ...user.dataValues,
+    });
+  }
 }
