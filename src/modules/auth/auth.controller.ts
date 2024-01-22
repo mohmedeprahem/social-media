@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Body, UseFilters, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseFilters,
+  Res,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { UserService } from './auth.service';
-import { ApiTags, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiHeader } from '@nestjs/swagger';
 import { CreateUserExceptionFilter } from 'src/shared/filters/create-user-exception.filter';
 import { CookieService, HeaderService } from 'src/utils';
 import { LoginDto, VerifyUserDto, CreateUserDto } from './dto';
+import { AtGuard } from 'src/shared/guards';
 
 @ApiTags('User')
 @Controller('api/v1/auth')
@@ -64,5 +74,20 @@ export class AuthController {
       status: 200,
       message: 'User logged in successfully',
     });
+  }
+
+  @Post('/logout')
+  @ApiHeader({
+    name: 'authorization',
+    description: 'Bearer token',
+    required: true,
+  })
+  @UseGuards(AtGuard)
+  async logout(@Req() req, @Res() res) {
+    res.clearCookie('refreshToken');
+
+    await this._userService.logout(req.user.sub);
+
+    res.status(204).send();
   }
 }
