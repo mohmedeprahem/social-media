@@ -13,7 +13,7 @@ import { ApiTags, ApiBody, ApiHeader } from '@nestjs/swagger';
 import { CreateUserExceptionFilter } from 'src/common/filters/create-user-exception.filter';
 import { CookieService, HeaderService } from 'src/utils';
 import { LoginDto, VerifyUserDto, CreateUserDto, ResendOtpDto } from './dto';
-import { AtGuard } from 'src/common/guards';
+import { AtGuard, RtGuard } from 'src/common/guards';
 
 @ApiTags('User')
 @Controller('api/v1/auth')
@@ -102,6 +102,29 @@ export class AuthController {
       success: true,
       status: 200,
       message: 'OTP sent successfully',
+    };
+  }
+
+  @Post('/refresh-token')
+  @ApiHeader({
+    name: 'authorization',
+    description: 'Bearer token',
+  })
+  @UseGuards(RtGuard)
+  async refreshToken(@Req() req) {
+    const jwtTokens = await this._userService.refreshToken(
+      req.user.payload.sub,
+      req.user.token,
+    );
+
+    CookieService.setRefreshTokenCookie(req.res, jwtTokens.refreshToken);
+
+    HeaderService.setJwtHeader(req.res, jwtTokens.accessToken);
+
+    return {
+      success: true,
+      status: 200,
+      message: 'Refresh token generated successfully',
     };
   }
 }
