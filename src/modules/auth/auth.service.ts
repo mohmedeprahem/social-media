@@ -202,4 +202,24 @@ export class UserService {
       ...user.dataValues,
     });
   }
+
+  async resendOTP(email: string) {
+    const user = await this._userRepository.findUser({
+      email,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const otpCode = OtpService.generateOtp();
+
+    user.otpCode = otpCode;
+    user.otpCreatedAt = new Date();
+    await this._userRepository.updateUserById({
+      ...user.dataValues,
+    });
+
+    await this._mailService.sendUserConfirmation(user, user.otpCode.toString());
+  }
 }
