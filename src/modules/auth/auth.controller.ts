@@ -14,12 +14,14 @@ import { CreateUserExceptionFilter } from 'src/common/filters/create-user-except
 import { CookieService, HeaderService } from 'src/utils';
 import { LoginDto, VerifyUserDto, CreateUserDto, ResendOtpDto } from './dto';
 import { AtGuard, RtGuard } from 'src/common/guards';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @ApiTags('User')
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private readonly _userService: UserService) {}
 
+  @Public()
   @Post('/register')
   @ApiBody({
     type: CreateUserDto,
@@ -39,6 +41,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('/verify')
   @ApiBody({
     type: VerifyUserDto,
@@ -58,6 +61,7 @@ export class AuthController {
     });
   }
 
+  @Public()
   @Post('/login')
   @ApiBody({
     type: LoginDto,
@@ -82,7 +86,6 @@ export class AuthController {
     description: 'Bearer token',
     required: true,
   })
-  @UseGuards(AtGuard)
   async logout(@Req() req, @Res() res) {
     res.clearCookie('refreshToken');
 
@@ -91,6 +94,7 @@ export class AuthController {
     res.status(204).send();
   }
 
+  @Public()
   @Post('/resend-otp')
   @ApiBody({
     type: ResendOtpDto,
@@ -105,6 +109,7 @@ export class AuthController {
     };
   }
 
+  @Public()
   @Post('/refresh-token')
   @ApiHeader({
     name: 'authorization',
