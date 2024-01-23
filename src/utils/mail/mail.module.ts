@@ -18,7 +18,7 @@ import { ConfigService } from '@nestjs/config';
           },
         },
         template: {
-          dir: join(__dirname, '../../shared/templates'),
+          dir: join(__dirname, '../../common/templates'),
           adapter: new HandlebarsAdapter(),
         },
       }),

@@ -10,7 +10,7 @@ import { CreateUserDto } from './dto/createUserDto.dto';
 import { UserRepository } from '../../database/repositories/user.repository';
 import { plainToClass } from 'class-transformer';
 import { User } from '../../database/models/User.entity';
-import { CreateUserError } from 'src/shared/errors/create-user-error';
+import { CreateUserError } from 'src/common/errors/create-user-error';
 import { VerifyUserDto } from './dto/verifyUserDto.dto';
 import { v4 as uuidv4 } from 'uuid';
 import {

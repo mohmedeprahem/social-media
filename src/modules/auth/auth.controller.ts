@@ -10,10 +10,10 @@ import {
 } from '@nestjs/common';
 import { UserService } from './auth.service';
 import { ApiTags, ApiBody, ApiHeader } from '@nestjs/swagger';
-import { CreateUserExceptionFilter } from 'src/shared/filters/create-user-exception.filter';
+import { CreateUserExceptionFilter } from 'src/common/filters/create-user-exception.filter';
 import { CookieService, HeaderService } from 'src/utils';
 import { LoginDto, VerifyUserDto, CreateUserDto, ResendOtpDto } from './dto';
-import { AtGuard } from 'src/shared/guards';
+import { AtGuard } from 'src/common/guards';
 
 @ApiTags('User')
 @Controller('api/v1/auth')
