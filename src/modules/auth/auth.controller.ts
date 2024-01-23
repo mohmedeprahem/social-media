@@ -12,7 +12,7 @@ import { UserService } from './auth.service';
 import { ApiTags, ApiBody, ApiHeader } from '@nestjs/swagger';
 import { CreateUserExceptionFilter } from 'src/shared/filters/create-user-exception.filter';
 import { CookieService, HeaderService } from 'src/utils';
-import { LoginDto, VerifyUserDto, CreateUserDto } from './dto';
+import { LoginDto, VerifyUserDto, CreateUserDto, ResendOtpDto } from './dto';
 import { AtGuard } from 'src/shared/guards';
 
 @ApiTags('User')
@@ -89,5 +89,19 @@ export class AuthController {
     await this._userService.logout(req.user.sub);
 
     res.status(204).send();
+  }
+
+  @Post('/resend-otp')
+  @ApiBody({
+    type: ResendOtpDto,
+  })
+  async resendOTP(@Body() body: ResendOtpDto) {
+    const user = await this._userService.resendOTP(body.email);
+
+    return {
+      success: true,
+      status: 200,
+      message: 'OTP sent successfully',
+    };
   }
 }
