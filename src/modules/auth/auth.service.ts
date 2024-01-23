@@ -222,4 +222,39 @@ export class UserService {
 
     await this._mailService.sendUserConfirmation(user, user.otpCode.toString());
   }
+
+  async refreshToken(userUuid: string, refreshToken: string) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!user.refreshToken) {
+      throw new UnauthorizedException();
+    }
+
+    if (
+      !this._jwtService.compareRefreshToken(refreshToken, user.refreshToken)
+    ) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const jwtToken = await this._jwtService.generateTokens({
+      sub: user.uuid,
+      email: user.email,
+    });
+
+    user.refreshToken = await this._jwtService.hashRefreshToken(
+      jwtToken.refreshToken,
+    );
+
+    await this._userRepository.updateUserById({
+      ...user.dataValues,
+    });
+
+    return jwtToken;
+  }
 }
