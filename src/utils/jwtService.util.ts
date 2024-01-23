@@ -32,4 +32,9 @@ export class JWTService {
     const salt = await bcrypt.genSalt(10);
     return await bcrypt.hash(refreshToken, salt);
   }
+
+  // compare refresh token
+  async compareRefreshToken(refreshToken: string, hashedRefreshToken: string) {
+    return await bcrypt.compare(refreshToken, hashedRefreshToken);
+  }
 }
