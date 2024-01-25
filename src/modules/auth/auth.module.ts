@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
-import { UserService } from './auth.service';
+import { AuthService } from './auth.service';
 import { UserRepository } from '../../database/repositories/user.repository';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from '../../database/models/User.entity';
@@ -17,7 +17,7 @@ import { AtStrategy, RtStrategy } from './strategies';
   controllers: [AuthController],
   providers: [
     UserRepository,
-    UserService,
+    AuthService,
     PasswordService,
     JWTService,
     AtStrategy,

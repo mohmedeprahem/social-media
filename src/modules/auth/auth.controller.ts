@@ -8,7 +8,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { UserService } from './auth.service';
+import { AuthService } from './auth.service';
 import { ApiTags, ApiBody, ApiHeader } from '@nestjs/swagger';
 import { CreateUserExceptionFilter } from 'src/common/filters/create-user-exception.filter';
 import { CookieService, HeaderService } from 'src/utils';
@@ -19,7 +19,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 @ApiTags('User')
 @Controller('api/v1/auth')
 export class AuthController {
-  constructor(private readonly _userService: UserService) {}
+  constructor(private readonly _authService: AuthService) {}
 
   @Public()
   @Post('/register')
@@ -29,7 +29,7 @@ export class AuthController {
   })
   @UseFilters(CreateUserExceptionFilter)
   async register(@Body() body: CreateUserDto) {
-    const user = await this._userService.createUser(body);
+    const user = await this._authService.createUser(body);
 
     if (user.success) {
       return {
@@ -48,7 +48,7 @@ export class AuthController {
     description: 'Json structure for user object',
   })
   async verifyAccount(@Body() body: VerifyUserDto, @Res() res) {
-    const jwtTokens = await this._userService.verifyAccount(body);
+    const jwtTokens = await this._authService.verifyAccount(body);
 
     CookieService.setRefreshTokenCookie(res, jwtTokens.refreshToken);
 
@@ -67,7 +67,7 @@ export class AuthController {
     type: LoginDto,
   })
   async login(@Body() body: LoginDto, @Res() res) {
-    const jwtTokens = await this._userService.login(body);
+    const jwtTokens = await this._authService.login(body);
 
     CookieService.setRefreshTokenCookie(res, jwtTokens.refreshToken);
 
@@ -89,7 +89,7 @@ export class AuthController {
   async logout(@Req() req, @Res() res) {
     res.clearCookie('refreshToken');
 
-    await this._userService.logout(req.user.sub);
+    await this._authService.logout(req.user.sub);
 
     res.status(204).send();
   }
@@ -100,7 +100,7 @@ export class AuthController {
     type: ResendOtpDto,
   })
   async resendOTP(@Body() body: ResendOtpDto) {
-    const user = await this._userService.resendOTP(body.email);
+    const user = await this._authService.resendOTP(body.email);
 
     return {
       success: true,
@@ -117,7 +117,7 @@ export class AuthController {
   })
   @UseGuards(RtGuard)
   async refreshToken(@Req() req) {
-    const jwtTokens = await this._userService.refreshToken(
+    const jwtTokens = await this._authService.refreshToken(
       req.user.payload.sub,
       req.user.token,
     );

@@ -22,7 +22,7 @@ import {
 import { LoginDto } from './dto';
 
 @Injectable()
-export class UserService {
+export class AuthService {
   constructor(
     private readonly _userRepository: UserRepository,
     private readonly _passwordService: PasswordService,
