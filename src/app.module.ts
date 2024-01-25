@@ -6,6 +6,8 @@ import { KeysService } from './utils/keysService.util';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './common/guards';
+import { UsersFollowing } from './database/models/UsersFollowing.entity';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -14,9 +16,10 @@ import { AtGuard } from './common/guards';
     }),
     SequelizeModule.forRoot({
       ...KeysService.getDatabaseKeys(process.env.NODE_ENV),
-      models: [User],
+      models: [User, UsersFollowing],
     }),
     AuthModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [
