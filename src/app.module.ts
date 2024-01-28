@@ -10,6 +10,7 @@ import { UsersFollowing } from './database/models/UsersFollowing.entity';
 import { UsersModule } from './modules/users/users.module';
 import { Post } from './database/models/Post.entity';
 import { PostsModule } from './modules/posts/posts.module';
+import { PostsLike } from 'src/database/models/PostsLike.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { PostsModule } from './modules/posts/posts.module';
     }),
     SequelizeModule.forRoot({
       ...KeysService.getDatabaseKeys(process.env.NODE_ENV),
-      models: [User, UsersFollowing, Post],
+      models: [User, UsersFollowing, Post, PostsLike],
     }),
     AuthModule,
     UsersModule,
