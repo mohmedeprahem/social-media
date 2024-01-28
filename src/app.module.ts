@@ -8,6 +8,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './common/guards';
 import { UsersFollowing } from './database/models/UsersFollowing.entity';
 import { UsersModule } from './modules/users/users.module';
+import { Post } from './database/models/Post.entity';
+import { PostsModule } from './modules/posts/posts.module';
 
 @Module({
   imports: [
@@ -16,10 +18,11 @@ import { UsersModule } from './modules/users/users.module';
     }),
     SequelizeModule.forRoot({
       ...KeysService.getDatabaseKeys(process.env.NODE_ENV),
-      models: [User, UsersFollowing],
+      models: [User, UsersFollowing, Post],
     }),
     AuthModule,
     UsersModule,
+    PostsModule,
   ],
   controllers: [],
   providers: [
