@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostRepository, UserRepository } from '../../database/repositories';
 import { Post } from 'src/database/models/Post.entity';
 
@@ -23,5 +23,23 @@ export class PostsService {
     newPost.userId = user.id;
 
     return this._postsRepository.create(newPost);
+  }
+
+  async getOnePost(userUuid: string, postId: number) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new Error();
+    }
+
+    const post = await this._postsRepository.findOneById(postId, ['user']);
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    return post;
   }
 }
