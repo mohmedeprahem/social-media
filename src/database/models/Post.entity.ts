@@ -1,19 +1,24 @@
-import { Table, Column, Model, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
 import { User } from './User.entity';
 
-@Table
+@Table({ tableName: 'posts' })
 export class Post extends Model {
-
   @Column
   description: string;
 
   @Column({
-    defaultValue: 0
+    defaultValue: 0,
   })
   likesCounter: number;
 
   @Column({
-    defaultValue: 0
+    defaultValue: 0,
   })
   commentsCounter: number;
 
