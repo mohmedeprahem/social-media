@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from '../models/Post.entity';
+import { Includeable } from 'sequelize/types';
 
 @Injectable()
 export class PostRepository {
@@ -12,5 +13,14 @@ export class PostRepository {
     });
 
     return newPost;
+  }
+
+  async findOneById(id: number, include: string[] = []): Promise<Post> {
+    const includeOptions: Includeable[] = include.map((assoc) => ({
+      model: this.postModel.associations[assoc].target,
+    }));
+    return this.postModel.findByPk(id, {
+      include: includeOptions,
+    });
   }
 }
