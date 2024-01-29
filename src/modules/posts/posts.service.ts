@@ -43,7 +43,11 @@ export class PostsService {
     return post;
   }
 
-  async getUserPosts(userUuid: string, targetUserId: number) {
+  async getUserPosts(
+    userUuid: string,
+    targetUserId: number,
+    pageNumber: number = 1,
+  ) {
     const user = await this._userRepository.findUser({
       uuid: userUuid,
     });
@@ -55,6 +59,7 @@ export class PostsService {
     const posts = await this._postsRepository.findPostsWithIsLiked(
       user.id,
       targetUserId,
+      pageNumber,
     );
 
     return posts;

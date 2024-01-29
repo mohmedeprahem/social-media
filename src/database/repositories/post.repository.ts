@@ -29,7 +29,11 @@ export class PostRepository {
     });
   }
 
-  async findPostsWithIsLiked(userId: number, targetUserId: number) {
+  async findPostsWithIsLiked(
+    userId: number,
+    targetUserId: number,
+    pageNumber: number = 1,
+  ) {
     const posts = await this.postModel.findAll({
       attributes: [
         'id',
@@ -58,6 +62,7 @@ export class PostRepository {
           required: false,
         },
       ],
+      offset: (pageNumber - 1) * 10,
     });
 
     return posts;

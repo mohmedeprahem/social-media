@@ -7,6 +7,7 @@ import {
   Get,
   Param,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { FollowUserDto } from './dto';
@@ -45,8 +46,13 @@ export class UsersController {
     @Req() req: IGetUserAuthInfoRequest,
     @Res() res,
     @Param('id') id: number,
+    @Query('pageNumber') pageNumber = 1,
   ) {
-    const posts = await this._postsService.getUserPosts(req.user.sub, id);
+    const posts = await this._postsService.getUserPosts(
+      req.user.sub,
+      id,
+      pageNumber,
+    );
 
     if (!posts || posts.length === 0) {
       throw new NotFoundException('not found');
