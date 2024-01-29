@@ -42,4 +42,21 @@ export class PostsService {
 
     return post;
   }
+
+  async getUserPosts(userUuid: string, targetUserId: number) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new Error();
+    }
+
+    const posts = await this._postsRepository.findPostsWithIsLiked(
+      user.id,
+      targetUserId,
+    );
+
+    return posts;
+  }
 }
