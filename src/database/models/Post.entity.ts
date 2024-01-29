@@ -4,8 +4,11 @@ import {
   Model,
   ForeignKey,
   BelongsTo,
+  HasMany,
+  DataType,
 } from 'sequelize-typescript';
 import { User } from './User.entity';
+import { PostsLike } from './PostsLike.entity';
 
 @Table({ tableName: 'posts' })
 export class Post extends Model {
@@ -34,4 +37,10 @@ export class Post extends Model {
 
   @BelongsTo(() => User)
   user: User;
+
+  @HasMany(() => PostsLike)
+  postLikes: PostsLike[];
+
+  @Column(DataType.VIRTUAL)
+  isLiked: boolean;
 }
