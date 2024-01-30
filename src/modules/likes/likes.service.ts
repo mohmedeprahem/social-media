@@ -20,4 +20,16 @@ export class LikesService {
 
     return await this._likesRepository.IsUserLikedPost(user.id, postId);
   }
+
+  async likePost(userUuid: string, postId: number) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new Error();
+    }
+
+    return await this._likesRepository.likePost(user.id, postId);
+  }
 }
