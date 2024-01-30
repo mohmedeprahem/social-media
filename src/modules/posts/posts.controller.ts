@@ -51,7 +51,7 @@ export class PostsController {
   ) {
     const post = await this._postsService.getOnePost(req.user.sub, id);
 
-    const isLiked = await this._likesService.userLikesPost(
+    const isLiked = await this._likesService.IsUserLikedPost(
       req.user.sub,
       post.id,
     );

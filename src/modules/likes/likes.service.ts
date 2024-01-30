@@ -10,7 +10,7 @@ export class LikesService {
     private readonly _userRepository: UserRepository,
   ) {}
 
-  async userLikesPost(userUuid: string, postId: number): Promise<boolean> {
+  async IsUserLikedPost(userUuid: string, postId: number): Promise<boolean> {
     const user = await this._userRepository.findUser({
       uuid: userUuid,
     });
