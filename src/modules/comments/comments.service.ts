@@ -42,4 +42,28 @@ export class CommentsService {
 
     await this._commentRepository.createComment(comment);
   }
+
+  async getCommentsForPost(userUuid: string, postId: number, pageNumber = 1) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new Error();
+    }
+
+    const post = await this._postRepository.findOneById(postId);
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    const comments = await this._commentRepository.getCommentsForPost(
+      postId,
+      ['user'],
+      pageNumber,
+    );
+
+    return comments;
+  }
 }
