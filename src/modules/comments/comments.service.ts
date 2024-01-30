@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import {
   UserRepository,
   CommentRepository,
@@ -65,5 +69,27 @@ export class CommentsService {
     );
 
     return comments;
+  }
+
+  async deleteComment(userUuid: string, commentId: number) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new Error();
+    }
+
+    const comment = await this._commentRepository.findOneById(commentId);
+
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    if (comment.userId !== user.id) {
+      throw new UnauthorizedException('unauthorized');
+    }
+
+    await this._commentRepository.deleteComment(commentId);
   }
 }
