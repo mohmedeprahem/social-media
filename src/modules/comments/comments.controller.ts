@@ -8,6 +8,7 @@ import {
   Query,
   Get,
   NotFoundException,
+  Delete,
 } from '@nestjs/common';
 import { IGetUserAuthInfoRequest } from 'src/common/interfaces';
 import { CommentsService } from './comments.service';
@@ -71,6 +72,21 @@ export class CommentsController {
 
     return res.status(200).json({
       ...SuccessResponse,
+    });
+  }
+
+  @Delete(':id')
+  async deleteComment(
+    @Req() req: IGetUserAuthInfoRequest,
+    @Res() res,
+    @Param('id') commentId,
+  ) {
+    await this._commentsService.deleteComment(req.user.sub, commentId);
+
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: 'Comment deleted successfully',
     });
   }
 }
