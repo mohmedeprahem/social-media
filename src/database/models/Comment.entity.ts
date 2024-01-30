@@ -1,8 +1,14 @@
-import { Table, Column, Model, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
 import { Post } from './Post.entity';
 import { User } from './User.entity';
 
-@Table
+@Table({ tableName: 'comments' })
 export class Comment extends Model {
   @Column
   description: string;
