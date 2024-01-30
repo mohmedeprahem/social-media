@@ -9,12 +9,13 @@ import {
   Patch,
 } from '@nestjs/common';
 import { IGetUserAuthInfoRequest } from 'src/common/interfaces/IGetUserAuthInfoRequest.interface';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { CreatePostDto } from './dto/createPost.dto';
 import { PostsService } from './posts.service';
 import { LikesService } from '../likes/likes.service';
 
 @Controller('api/v1/posts')
+@ApiTags('Posts')
 export class PostsController {
   constructor(
     private _postsService: PostsService,
@@ -22,6 +23,7 @@ export class PostsController {
   ) {}
 
   @Post()
+  @ApiSecurity('access-token')
   @ApiBody({
     type: CreatePostDto,
   })
@@ -44,6 +46,7 @@ export class PostsController {
   }
 
   @Get(':id')
+  @ApiSecurity('access-token')
   async getOnePost(
     @Req() req: IGetUserAuthInfoRequest,
     @Res() res,
@@ -77,6 +80,7 @@ export class PostsController {
   }
 
   @Patch(':id/like')
+  @ApiSecurity('access-token')
   async likePost(
     @Req() req: IGetUserAuthInfoRequest,
     @Res() res,

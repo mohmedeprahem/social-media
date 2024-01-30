@@ -12,18 +12,32 @@ import {
 } from '@nestjs/common';
 import { IGetUserAuthInfoRequest } from 'src/common/interfaces';
 import { CommentsService } from './comments.service';
-import { CreateCommentDto } from './dto';
+import { CreateCommentDto } from './dto/CreateComment.dto';
+import {
+  ApiBody,
+  ApiSecurity,
+  ApiTags,
+  ApiQuery,
+  ApiParam,
+} from '@nestjs/swagger';
 
+@ApiTags('Comments')
 @Controller('api/v1/posts/:postId/comments')
 export class CommentsController {
   constructor(private readonly _commentsService: CommentsService) {}
 
   @Post()
+  @ApiSecurity('access-token')
+  @ApiBody({
+    type: CreateCommentDto,
+    description: 'Create comment',
+  })
+  @ApiParam({ name: 'postId', type: Number })
   async createComment(
+    @Body() body: CreateCommentDto,
+    @Param('postId') postId,
     @Req() req: IGetUserAuthInfoRequest,
     @Res() res,
-    @Param('postId') postId,
-    @Body() body: CreateCommentDto,
   ) {
     const comment = await this._commentsService.createComment(
       req.user.sub,
@@ -39,6 +53,8 @@ export class CommentsController {
   }
 
   @Get()
+  @ApiSecurity('access-token')
+  @ApiParam({ name: 'postId', type: Number })
   async getCommentsForPost(
     @Req() req: IGetUserAuthInfoRequest,
     @Res() res,
@@ -75,11 +91,14 @@ export class CommentsController {
     });
   }
 
-  @Delete(':id')
+  @Delete(':commentId')
+  @ApiSecurity('access-token')
+  @ApiParam({ name: 'postId', type: Number })
+  @ApiParam({ name: 'commentId', type: Number })
   async deleteComment(
+    @Param('commentId') commentId,
     @Req() req: IGetUserAuthInfoRequest,
     @Res() res,
-    @Param('id') commentId,
   ) {
     await this._commentsService.deleteComment(req.user.sub, commentId);
 

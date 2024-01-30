@@ -12,10 +12,11 @@ import {
 import { UsersService } from './users.service';
 import { FollowUserDto } from './dto';
 import { IGetUserAuthInfoRequest } from 'src/common/interfaces/IGetUserAuthInfoRequest.interface';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { PostsService } from '../posts/posts.service';
 
 @Controller('api/v1/users')
+@ApiTags('Users')
 export class UsersController {
   constructor(
     private readonly _usersService: UsersService,
@@ -23,6 +24,7 @@ export class UsersController {
   ) {}
 
   @Post('follow')
+  @ApiSecurity('access-token')
   @ApiBody({
     type: FollowUserDto,
     description: 'Json structure for user object',
@@ -42,6 +44,7 @@ export class UsersController {
   }
 
   @Get(':id/posts')
+  @ApiSecurity('access-token')
   async getUserPosts(
     @Req() req: IGetUserAuthInfoRequest,
     @Res() res,

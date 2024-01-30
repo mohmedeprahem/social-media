@@ -9,14 +9,14 @@ import {
   Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiTags, ApiBody, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiHeader, ApiSecurity } from '@nestjs/swagger';
 import { CreateUserExceptionFilter } from 'src/common/filters/create-user-exception.filter';
 import { CookieService, HeaderService } from 'src/utils';
 import { LoginDto, VerifyUserDto, CreateUserDto, ResendOtpDto } from './dto';
 import { AtGuard, RtGuard } from 'src/common/guards';
 import { Public } from 'src/common/decorators/public.decorator';
 
-@ApiTags('User')
+@ApiTags('Auth')
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private readonly _authService: AuthService) {}
@@ -81,11 +81,7 @@ export class AuthController {
   }
 
   @Post('/logout')
-  @ApiHeader({
-    name: 'authorization',
-    description: 'Bearer token',
-    required: true,
-  })
+  @ApiSecurity('access-token')
   async logout(@Req() req, @Res() res) {
     res.clearCookie('refreshToken');
 
@@ -111,10 +107,6 @@ export class AuthController {
 
   @Public()
   @Post('/refresh-token')
-  @ApiHeader({
-    name: 'authorization',
-    description: 'Bearer token',
-  })
   @UseGuards(RtGuard)
   async refreshToken(@Req() req) {
     const jwtTokens = await this._authService.refreshToken(
