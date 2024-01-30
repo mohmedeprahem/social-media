@@ -32,4 +32,22 @@ export class CommentRepository {
       offset: (pageNumber - 1) * 10,
     });
   }
+
+  async findOneById(id: number, include: string[] = []) {
+    const includeOptions: Includeable[] = include.map((assoc) => ({
+      model: this.CommentModel.associations[assoc].target,
+    }));
+
+    return await this.CommentModel.findByPk(id, {
+      include: includeOptions,
+    });
+  }
+
+  async deleteComment(id: number) {
+    await this.CommentModel.destroy({
+      where: {
+        id,
+      },
+    });
+  }
 }
