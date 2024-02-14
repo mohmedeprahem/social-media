@@ -51,11 +51,12 @@ export class CommentRepository {
     });
   }
 
-  async deleteComment(id: number) {
+  async deleteComment(id: number, transaction: Transaction = null) {
     await this.CommentModel.destroy({
       where: {
         id,
       },
+      transaction,
     });
   }
 }
