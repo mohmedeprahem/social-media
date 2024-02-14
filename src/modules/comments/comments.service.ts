@@ -105,6 +105,8 @@ export class CommentsService {
   }
 
   async deleteComment(userUuid: string, commentId: number) {
+    const transaction = await this.sequelize.transaction();
+
     const user = await this._userRepository.findUser({
       uuid: userUuid,
     });
@@ -123,6 +125,37 @@ export class CommentsService {
       throw new UnauthorizedException('unauthorized');
     }
 
-    await this._commentRepository.deleteComment(commentId);
+    try {
+      // delete comment
+      await this._commentRepository.deleteComment(commentId, transaction);
+
+      const post = await this._postRepository.findOneById(comment.postId);
+
+      if (!post) {
+        throw new Error();
+      }
+
+      // update post counter for comments
+      post.commentsCounter--;
+
+      await this._postRepository.updatePost(post, transaction);
+
+      // update user owner post counter for comments
+      const ownerPost = await this._userRepository.findUser({
+        id: post.userId,
+      });
+
+      if (!ownerPost) {
+        throw new Error();
+      }
+      ownerPost.commentCounter++;
+
+      await this._userRepository.updateUserById(ownerPost, transaction);
+
+      await transaction.commit();
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 }
