@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from '../models/Post.entity';
-import { Includeable } from 'sequelize/types';
+import { Includeable, Transaction } from 'sequelize/types';
 import { PostsLike } from '../models/PostsLike.entity';
 import sequelize from 'sequelize';
 
@@ -66,5 +66,24 @@ export class PostRepository {
     });
 
     return posts;
+  }
+
+  async updatePost(
+    post: Post,
+    transaction: Transaction = null,
+  ): Promise<Boolean> {
+    const newPost = await this.postModel.update(
+      {
+        ...post.dataValues,
+      },
+      {
+        where: {
+          id: post.id,
+        },
+        transaction,
+      },
+    );
+
+    return newPost[0] > 0;
   }
 }
