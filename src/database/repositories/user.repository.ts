@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../models/User.entity';
 import { WhereOptions } from 'sequelize';
+import { Transaction } from 'sequelize/types';
 
 @Injectable()
 export class UserRepository {
@@ -19,12 +20,19 @@ export class UserRepository {
     return await this.userModel.findOne({ where: { email } });
   }
 
-  async updateUserById(user: User): Promise<boolean> {
-    await this.userModel.update(user, {
-      where: {
-        id: user.id,
+  async updateUserById(
+    user: User,
+    transaction: Transaction = null,
+  ): Promise<boolean> {
+    await this.userModel.update(
+      { ...user.dataValues },
+      {
+        where: {
+          id: user.id,
+        },
+        transaction,
       },
-    });
+    );
     return true;
   }
 
