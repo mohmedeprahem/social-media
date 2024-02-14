@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Comment } from '../models/Comment.entity';
-import { Includeable } from 'sequelize';
+import { Includeable, Transaction } from 'sequelize';
 
 @Injectable()
 export class CommentRepository {
@@ -9,10 +9,18 @@ export class CommentRepository {
     @InjectModel(Comment) private readonly CommentModel: typeof Comment,
   ) {}
 
-  async createComment(comment: Comment) {
-    await this.CommentModel.create({
-      ...comment.dataValues,
-    });
+  async createComment(
+    comment: Comment,
+    transaction: Transaction = null,
+  ): Promise<Comment> {
+    return await this.CommentModel.create(
+      {
+        ...comment.dataValues,
+      },
+      {
+        transaction,
+      },
+    );
   }
 
   async getCommentsForPost(
