@@ -103,10 +103,6 @@ export class CommentsController {
   ) {
     await this._commentsService.deleteComment(req.user.sub, commentId);
 
-    return res.status(200).json({
-      success: true,
-      status: 200,
-      message: 'Comment deleted successfully',
-    });
+    return res.status(204).send();
   }
 }
