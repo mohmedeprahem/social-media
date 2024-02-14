@@ -11,6 +11,7 @@ import {
 import { CreateCommentDto } from './dto';
 import { plainToClass } from 'class-transformer';
 import { Comment } from 'src/database/models/Comment.entity';
+import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class CommentsService {
@@ -18,13 +19,16 @@ export class CommentsService {
     private readonly _userRepository: UserRepository,
     private readonly _commentRepository: CommentRepository,
     private readonly _postRepository: PostRepository,
+    private readonly sequelize: Sequelize,
   ) {}
 
   async createComment(
     userUuid: string,
     postId: number,
     body: CreateCommentDto,
-  ) {
+  ): Promise<Comment> {
+    const transaction = await this.sequelize.transaction();
+
     const user = await this._userRepository.findUser({
       uuid: userUuid,
     });
@@ -39,12 +43,27 @@ export class CommentsService {
       throw new NotFoundException('Post not found');
     }
 
-    const comment = plainToClass(Comment, body);
+    let comment = plainToClass(Comment, body);
 
     comment.userId = user.id;
     comment.postId = post.id;
+    try {
+      comment = await this._commentRepository.createComment(
+        comment,
+        transaction,
+      );
 
-    await this._commentRepository.createComment(comment);
+      post.commentsCounter++;
+
+      await this._postRepository.updatePost(post, transaction);
+
+      await transaction.commit();
+
+      return comment;
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
+    }
   }
 
   async getCommentsForPost(userUuid: string, postId: number, pageNumber = 1) {
