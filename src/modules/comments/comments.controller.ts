@@ -49,6 +49,7 @@ export class CommentsController {
       success: true,
       status: 201,
       message: 'Comment created successfully',
+      commentId: comment.id,
     });
   }
 
