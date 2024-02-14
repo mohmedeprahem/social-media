@@ -7,12 +7,15 @@ import {
   Get,
   Param,
   Patch,
+  Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { IGetUserAuthInfoRequest } from 'src/common/interfaces/IGetUserAuthInfoRequest.interface';
 import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { CreatePostDto } from './dto/createPost.dto';
 import { PostsService } from './posts.service';
 import { LikesService } from '../likes/likes.service';
+import { UUID } from 'sequelize';
 
 @Controller('api/v1/posts')
 @ApiTags('Posts')
@@ -93,6 +96,43 @@ export class PostsController {
       success: true,
       status: 200,
       message: 'Post liked successfully',
+    });
+  }
+
+  @Get('users/:uuid')
+  @ApiSecurity('access-token')
+  async getUserPosts(
+    @Req() req: IGetUserAuthInfoRequest,
+    @Res() res,
+    @Param('uuid') uuid: string,
+    @Query('pageNumber') pageNumber = 1,
+  ) {
+    const posts = await this._postsService.getUserPosts(
+      req.user.sub,
+      uuid,
+      pageNumber,
+    );
+
+    if (!posts || posts.length === 0) {
+      throw new NotFoundException('not found');
+    }
+
+    const successResponse = {
+      success: true,
+      status: 200,
+      message: 'success',
+      ...posts.map((post) => ({
+        id: post.id,
+        description: post.description,
+        numberOfLikes: post.likesCounter,
+        numberOfComments: post.commentsCounter,
+        isLiked: post.isLiked,
+        createdAt: post.createdAt,
+      })),
+    };
+
+    return res.status(200).json({
+      ...successResponse,
     });
   }
 }
