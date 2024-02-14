@@ -48,14 +48,28 @@ export class CommentsService {
     comment.userId = user.id;
     comment.postId = post.id;
     try {
+      // create comment
       comment = await this._commentRepository.createComment(
         comment,
         transaction,
       );
 
+      // update post counter for comments
       post.commentsCounter++;
 
       await this._postRepository.updatePost(post, transaction);
+
+      // update user owner post counter for comments
+      const ownerPost = await this._userRepository.findUser({
+        id: post.userId,
+      });
+
+      if (!ownerPost) {
+        throw new Error();
+      }
+      ownerPost.commentCounter++;
+
+      await this._userRepository.updateUserById(ownerPost, transaction);
 
       await transaction.commit();
 
