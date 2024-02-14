@@ -45,7 +45,7 @@ export class PostsService {
 
   async getUserPosts(
     userUuid: string,
-    targetUserId: number,
+    targetUserId: string,
     pageNumber: number = 1,
   ) {
     const user = await this._userRepository.findUser({
@@ -56,9 +56,13 @@ export class PostsService {
       throw new Error();
     }
 
+    const targetUser = await this._userRepository.findUser({
+      uuid: targetUserId,
+    });
+
     const posts = await this._postsRepository.findPostsWithIsLiked(
       user.id,
-      targetUserId,
+      targetUser.id,
       pageNumber,
     );
 
