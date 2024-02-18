@@ -8,11 +8,12 @@ import {
   Get,
   Query,
   NotFoundException,
+  Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { FollowUserDto, ToggleEmailPrivacyRequestDto } from './dto';
 import { IGetUserAuthInfoRequest } from 'src/common/interfaces/IGetUserAuthInfoRequest.interface';
-import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiSecurity, ApiTags, ApiParam } from '@nestjs/swagger';
 import { Public } from 'src/common/decorators';
 
 @Controller('api/v1/users')
@@ -107,6 +108,63 @@ export class UsersController {
 
     return res.status(200).json({
       ...SuccessResponse,
+    });
+  }
+
+  @Get('profile/:uuid')
+  @Public()
+  @ApiParam({ name: 'uuid', type: 'string' })
+  @ApiSecurity('access-token')
+  async getUserProfile(
+    @Req() req: IGetUserAuthInfoRequest,
+    @Res() res,
+    @Param('uuid') uuid,
+  ) {
+    const user = await this._usersService.getUserInfo(uuid);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const successResponse = {
+      success: true,
+      status: 200,
+      message: 'success',
+      user: {
+        uuid: user.uuid,
+        fullName: user.fullName,
+        email: user.email,
+        isEmailPrivate: user.isEmailPrivate,
+        age: user.dateOfBirth
+          ? new Date().getFullYear() - new Date(user.dateOfBirth).getFullYear()
+          : null,
+        dataOfBirth: user.dateOfBirth,
+        gender: user.gender,
+        likesCounter: user.likeCounter,
+        commentsCounter: user.commentCounter,
+        isPersonalProfile: false,
+        isFollowedBy: false,
+      },
+    };
+
+    if (req.user && req.user.sub) {
+      if (user.uuid === req.user.sub) {
+        successResponse.user.isPersonalProfile = true;
+        successResponse.user.isFollowedBy = true;
+      }
+
+      const isFollowing = await this._usersService.isFollowing(
+        req.user.sub,
+        uuid,
+      );
+
+      if (isFollowing) {
+        successResponse.user.isFollowedBy = true;
+      }
+    }
+
+    return res.status(200).json({
+      ...successResponse,
     });
   }
 }
