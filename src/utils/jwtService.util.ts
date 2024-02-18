@@ -37,4 +37,8 @@ export class JWTService {
   async compareRefreshToken(refreshToken: string, hashedRefreshToken: string) {
     return await bcrypt.compare(refreshToken, hashedRefreshToken);
   }
+
+  async verifyAccessToken(token: string) {
+    return await this._jwtService.verifyAsync(token);
+  }
 }
