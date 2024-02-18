@@ -12,10 +12,12 @@ import {
 import { PostsLike } from 'src/database/models/PostsLike.entity';
 import { PostsService } from '../posts/posts.service';
 import { Post } from 'src/database/models/Post.entity';
+import { MailModule } from 'src/utils';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([User, UsersFollowing, PostsLike, Post]),
+    MailModule,
   ],
   controllers: [UsersController],
   providers: [
