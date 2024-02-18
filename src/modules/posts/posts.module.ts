@@ -8,12 +8,16 @@ import {
   PostRepository,
   UserRepository,
   LikeRepository,
+  UserFollowingRepository,
 } from '../../database/repositories';
 import { LikesService } from '../likes/likes.service';
 import { PostsLike } from 'src/database/models/PostsLike.entity';
+import { UsersFollowing } from 'src/database/models/UsersFollowing.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([User, Post, PostsLike])],
+  imports: [
+    SequelizeModule.forFeature([User, Post, PostsLike, UsersFollowing]),
+  ],
   controllers: [PostsController],
   providers: [
     PostsService,
@@ -21,6 +25,7 @@ import { PostsLike } from 'src/database/models/PostsLike.entity';
     UserRepository,
     LikesService,
     LikeRepository,
+    UserFollowingRepository,
   ],
 })
 export class PostsModule {}
