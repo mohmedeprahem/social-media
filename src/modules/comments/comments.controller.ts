@@ -56,6 +56,11 @@ export class CommentsController {
   @Get()
   @ApiSecurity('access-token')
   @ApiParam({ name: 'postId', type: Number })
+  @ApiQuery({
+    name: 'pageNumber',
+    type: Number,
+    required: false,
+  })
   async getCommentsForPost(
     @Req() req: IGetUserAuthInfoRequest,
     @Res() res,
