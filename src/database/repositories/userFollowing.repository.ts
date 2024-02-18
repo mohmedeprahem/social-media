@@ -34,4 +34,12 @@ export class UserFollowingRepository {
       },
     });
   }
+
+  async getFollowedUsers(userId: number): Promise<UsersFollowing[]> {
+    return await this.usersFollowingModel.findAll({
+      where: {
+        userId,
+      },
+    });
+  }
 }
