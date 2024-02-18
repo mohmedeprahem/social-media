@@ -86,4 +86,22 @@ export class PostRepository {
 
     return newPost[0] > 0;
   }
+
+  async getPosts(
+    pageNumber: number = 1,
+    conditions: object = {},
+    include: string[] = [],
+  ): Promise<Post[]> {
+    const includeOptions: Includeable[] = include.map((assoc) => ({
+      model: this.postModel.associations[assoc].target,
+    }));
+
+    return await this.postModel.findAll({
+      where: {
+        ...conditions,
+      },
+      include: includeOptions,
+      offset: (pageNumber - 1) * 10,
+    });
+  }
 }
