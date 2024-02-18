@@ -39,4 +39,10 @@ export class UserRepository {
   async findUser(condition: WhereOptions<any>): Promise<User> {
     return await this.userModel.findOne({ where: condition });
   }
+
+  async findUsers(condition: WhereOptions<any>): Promise<User[]> {
+    return await this.userModel.findAll({
+      where: condition,
+    });
+  }
 }
