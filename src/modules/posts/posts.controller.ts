@@ -16,6 +16,7 @@ import { CreatePostDto } from './dto/createPost.dto';
 import { PostsService } from './posts.service';
 import { LikesService } from '../likes/likes.service';
 import { UUID } from 'sequelize';
+import { Public } from 'src/common/decorators';
 
 @Controller('api/v1/posts')
 @ApiTags('Posts')
@@ -100,6 +101,7 @@ export class PostsController {
   }
 
   @Get('users/:uuid')
+  @Public()
   @ApiSecurity('access-token')
   async getUserPosts(
     @Req() req: IGetUserAuthInfoRequest,
@@ -108,9 +110,9 @@ export class PostsController {
     @Query('pageNumber') pageNumber = 1,
   ) {
     const posts = await this._postsService.getUserPosts(
-      req.user.sub,
       uuid,
       pageNumber,
+      req.user && req.user.sub ? req.user.sub : null,
     );
 
     if (!posts || posts.length === 0) {
@@ -126,7 +128,7 @@ export class PostsController {
         description: post.description,
         numberOfLikes: post.likesCounter,
         numberOfComments: post.commentsCounter,
-        isLiked: post.isLiked,
+        isLiked: req.user && req.user.sub ? post.isLiked : false,
         createdAt: post.createdAt,
       })),
     };
