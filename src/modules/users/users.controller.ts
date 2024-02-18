@@ -1,8 +1,19 @@
-import { Controller, Post, Body, Req, Res, Patch, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  Res,
+  Patch,
+  Get,
+  Query,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { FollowUserDto, ToggleEmailPrivacyRequestDto } from './dto';
 import { IGetUserAuthInfoRequest } from 'src/common/interfaces/IGetUserAuthInfoRequest.interface';
 import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/common/decorators';
 
 @Controller('api/v1/users')
 @ApiTags('Users')
@@ -67,6 +78,35 @@ export class UsersController {
         fullName: user.fullName,
         email: user.email,
       },
+    });
+  }
+
+  @Get('search')
+  @Public()
+  async searchUsers(
+    @Query('filter') filter: string,
+    @Req() req: Request,
+    @Res() res,
+  ) {
+    const users = await this._usersService.searchUsers(filter);
+
+    if (!users || users.length === 0) {
+      throw new NotFoundException('Users not found');
+    }
+
+    const SuccessResponse = {
+      success: true,
+      status: 200,
+      message: 'success',
+      users: users.map((user) => ({
+        uuid: user.uuid,
+        fullName: user.fullName,
+        email: user.email,
+      })),
+    };
+
+    return res.status(200).json({
+      ...SuccessResponse,
     });
   }
 }
