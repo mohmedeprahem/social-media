@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module';
 import { User } from './database/models/User.entity';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -45,6 +45,9 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthOrAnonymousMiddleware)
-      .forRoutes('/api/v1/posts/users/:uuid');
+      .forRoutes(
+        { path: '/api/v1/posts/users/:uuid', method: RequestMethod.GET },
+        { path: '/api/v1/users/profile/:uuid', method: RequestMethod.GET },
+      );
   }
 }
