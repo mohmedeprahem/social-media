@@ -11,7 +11,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { IGetUserAuthInfoRequest } from 'src/common/interfaces/IGetUserAuthInfoRequest.interface';
-import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { CreatePostDto } from './dto/createPost.dto';
 import { PostsService } from './posts.service';
 import { LikesService } from '../likes/likes.service';
@@ -69,6 +69,11 @@ export class PostsController {
   @Get('users/:uuid')
   @Public()
   @ApiSecurity('access-token')
+  @ApiQuery({
+    name: 'pageNumber',
+    required: false,
+    type: Number,
+  })
   async getUserPosts(
     @Req() req: IGetUserAuthInfoRequest,
     @Res() res,
@@ -106,6 +111,11 @@ export class PostsController {
 
   @Get('feeds')
   @ApiSecurity('access-token')
+  @ApiQuery({
+    name: 'pageNumber',
+    required: false,
+    type: Number,
+  })
   async getFollowedUsersPosts(
     @Req() req: IGetUserAuthInfoRequest,
     @Res() res,
