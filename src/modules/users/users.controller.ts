@@ -1,6 +1,6 @@
-import { Controller, Post, Body, Req, Res } from '@nestjs/common';
+import { Controller, Post, Body, Req, Res, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { FollowUserDto } from './dto';
+import { FollowUserDto, ToggleEmailPrivacyRequestDto } from './dto';
 import { IGetUserAuthInfoRequest } from 'src/common/interfaces/IGetUserAuthInfoRequest.interface';
 import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
@@ -26,6 +26,30 @@ export class UsersController {
       success: true,
       status: 200,
       message: 'success',
+    });
+  }
+
+  @Patch('email-privacy')
+  @ApiSecurity('access-token')
+  @ApiBody({
+    type: ToggleEmailPrivacyRequestDto,
+    description: 'Json structure for user object',
+  })
+  async toggleEmailPrivacy(
+    @Body() body: ToggleEmailPrivacyRequestDto,
+    @Req() req: IGetUserAuthInfoRequest,
+    @Res() res,
+  ) {
+    const user = await this._usersService.toggleEmailPrivacy(
+      req.user.sub,
+      body.isEmailPrivate,
+    );
+
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: 'success',
+      isEmailPrivate: user.isEmailPrivate,
     });
   }
 }
