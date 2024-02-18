@@ -46,4 +46,20 @@ export class UsersService {
       );
     }
   }
+
+  async toggleEmailPrivacy(userUuid: string, isEmailPrivate: boolean) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new HttpException(null, 500);
+    }
+
+    user.isEmailPrivate = isEmailPrivate;
+
+    await this._userRepository.updateUserById(user);
+
+    return user;
+  }
 }
