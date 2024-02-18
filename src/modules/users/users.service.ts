@@ -86,4 +86,30 @@ export class UsersService {
 
     return users;
   }
+
+  async isFollowing(userUuid: string, targetUserUuid: string) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new HttpException(null, 500);
+    }
+
+    const targetUser = await this._userRepository.findUser({
+      uuid: targetUserUuid,
+    });
+
+    if (!targetUser) {
+      throw new HttpException(null, 500);
+    }
+
+    const userFollowing =
+      await this._userFollowingRepository.findOneUsersFollowing({
+        userId: user.id,
+        followingUserId: targetUser.id,
+      });
+
+    return !!userFollowing;
+  }
 }
