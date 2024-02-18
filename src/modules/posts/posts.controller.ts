@@ -49,40 +49,6 @@ export class PostsController {
     });
   }
 
-  @Get(':id')
-  @ApiSecurity('access-token')
-  async getOnePost(
-    @Req() req: IGetUserAuthInfoRequest,
-    @Res() res,
-    @Param('id') id: number,
-  ) {
-    const post = await this._postsService.getOnePost(req.user.sub, id);
-
-    const isLiked = await this._likesService.IsUserLikedPost(
-      req.user.sub,
-      post.id,
-    );
-
-    const postResponse = {
-      id: post.id,
-      description: post.description,
-      numberOfLikes: post.likesCounter,
-      numberOfComments: post.commentsCounter,
-      isLiked: isLiked,
-      createdAt: post.createdAt,
-      user: {
-        fullName: post.user.fullName,
-        UUID: post.user.uuid,
-      },
-    };
-    return res.status(200).json({
-      success: true,
-      status: 200,
-      message: 'Post fetched successfully',
-      postResponse,
-    });
-  }
-
   @Patch(':id/like')
   @ApiSecurity('access-token')
   async likePost(
@@ -135,6 +101,84 @@ export class PostsController {
 
     return res.status(200).json({
       ...successResponse,
+    });
+  }
+
+  @Get('feeds')
+  @ApiSecurity('access-token')
+  async getFollowedUsersPosts(
+    @Req() req: IGetUserAuthInfoRequest,
+    @Res() res,
+    @Query('pageNumber') pageNumber = 1,
+  ) {
+    const posts = await this._postsService.getFollowedUsersPosts(
+      req.user.sub,
+      pageNumber,
+    );
+
+    if (!posts || posts.length === 0) {
+      throw new NotFoundException('not found');
+    }
+
+    const successResponse = {
+      success: true,
+      status: 200,
+      message: 'success',
+      posts: await Promise.all(
+        posts.map(async (post) => ({
+          id: post.id,
+          description: post.description,
+          numberOfLikes: post.likesCounter,
+          numberOfComments: post.commentsCounter,
+          isLiked: await this._likesService.IsUserLikedPost(
+            req.user.sub,
+            post.id,
+          ),
+          createdAt: post.createdAt,
+          user: {
+            fullName: post.user.fullName,
+            UUID: post.user.uuid,
+          },
+        })),
+      ),
+    };
+
+    return res.status(200).json({
+      ...successResponse,
+    });
+  }
+
+  @Get(':id')
+  @ApiSecurity('access-token')
+  async getOnePost(
+    @Req() req: IGetUserAuthInfoRequest,
+    @Res() res,
+    @Param('id') id: number,
+  ) {
+    const post = await this._postsService.getOnePost(req.user.sub, id);
+
+    const isLiked = await this._likesService.IsUserLikedPost(
+      req.user.sub,
+      post.id,
+    );
+
+    const postResponse = {
+      id: post.id,
+      description: post.description,
+      numberOfLikes: post.likesCounter,
+      numberOfComments: post.commentsCounter,
+      isLiked: isLiked,
+      createdAt: post.createdAt,
+      user: {
+        fullName: post.user.fullName,
+        UUID: post.user.uuid,
+      },
+    };
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: 'Post fetched successfully',
+      postResponse,
     });
   }
 }
