@@ -11,7 +11,11 @@ import {
   Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { FollowUserDto, ToggleEmailPrivacyRequestDto } from './dto';
+import {
+  FollowUserDto,
+  ToggleEmailPrivacyRequestDto,
+  UpdateEmailRequestDto,
+} from './dto';
 import { IGetUserAuthInfoRequest } from 'src/common/interfaces/IGetUserAuthInfoRequest.interface';
 import { ApiBody, ApiSecurity, ApiTags, ApiParam } from '@nestjs/swagger';
 import { Public } from 'src/common/decorators';
@@ -165,6 +169,28 @@ export class UsersController {
 
     return res.status(200).json({
       ...successResponse,
+    });
+  }
+
+  @Patch('email')
+  @ApiSecurity('access-token')
+  @ApiBody({
+    type: UpdateEmailRequestDto,
+  })
+  async updateEmail(
+    @Body() body: UpdateEmailRequestDto,
+    @Req() req: IGetUserAuthInfoRequest,
+    @Res() res,
+  ) {
+    const user = await this._usersService.updateEmail(
+      req.user.sub,
+      body.newEmail,
+    );
+
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: 'success',
     });
   }
 }
