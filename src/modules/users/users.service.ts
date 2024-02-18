@@ -62,4 +62,16 @@ export class UsersService {
 
     return user;
   }
+
+  async getUserInfo(userUuid: string) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new HttpException(null, 500);
+    }
+
+    return user;
+  }
 }
