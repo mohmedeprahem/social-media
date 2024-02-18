@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module';
 import { User } from './database/models/User.entity';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -13,6 +13,9 @@ import { PostsModule } from './modules/posts/posts.module';
 import { PostsLike } from 'src/database/models/PostsLike.entity';
 import { Comment } from './database/models/Comment.entity';
 import { CommentsModule } from './modules/comments/comments.module';
+import { AuthOrAnonymousMiddleware } from './common/middleware';
+import { JWTService } from './utils';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -23,6 +26,7 @@ import { CommentsModule } from './modules/comments/comments.module';
       ...KeysService.getDatabaseKeys(process.env.NODE_ENV),
       models: [User, UsersFollowing, Post, PostsLike, Comment],
     }),
+    JwtModule.register({ secret: process.env.JWT_AT_SECRET }),
     AuthModule,
     UsersModule,
     PostsModule,
@@ -30,10 +34,17 @@ import { CommentsModule } from './modules/comments/comments.module';
   ],
   controllers: [],
   providers: [
+    JWTService,
     {
       provide: APP_GUARD,
       useClass: AtGuard,
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthOrAnonymousMiddleware)
+      .forRoutes('/api/v1/posts/users/:uuid');
+  }
+}
