@@ -63,6 +63,7 @@ export class PostRepository {
         },
       ],
       offset: (pageNumber - 1) * 10,
+      limit: 10,
     });
 
     return posts;
@@ -102,6 +103,26 @@ export class PostRepository {
       },
       include: includeOptions,
       offset: (pageNumber - 1) * 10,
+      limit: 10,
+    });
+  }
+
+  async getFollowedUsersPosts(
+    followedUserIds: number[],
+    pageNumber = 1,
+    include: string[] = [],
+  ): Promise<Post[]> {
+    const includeOptions: Includeable[] = include.map((assoc) => ({
+      model: this.postModel.associations[assoc].target,
+    }));
+    return await this.postModel.findAll({
+      where: {
+        userId: followedUserIds,
+      },
+      include: includeOptions,
+      offset: (pageNumber - 1) * 10,
+      limit: 10,
+      order: [['createdAt', 'DESC']],
     });
   }
 }
