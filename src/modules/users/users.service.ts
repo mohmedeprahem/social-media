@@ -1,16 +1,23 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Op } from 'sequelize';
 import { UsersFollowing } from 'src/database/models/UsersFollowing.entity';
 import {
   UserRepository,
   UserFollowingRepository,
 } from 'src/database/repositories';
+import { OtpService, MailService } from 'src/utils';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly _userRepository: UserRepository,
     private readonly _userFollowingRepository: UserFollowingRepository,
+    private readonly _mailService: MailService,
   ) {}
 
   async followUser(userUuid: string, targetUserUuid: string) {
@@ -111,5 +118,40 @@ export class UsersService {
       });
 
     return !!userFollowing;
+  }
+
+  async updateEmail(userUuid: string, newEmail: string) {
+    // check if user exists
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new HttpException(null, 500);
+    }
+
+    user.newEmail = newEmail;
+
+    // check if email is already taken
+    const existingUser = await this._userRepository.findUser({
+      email: newEmail,
+    });
+
+    console.log(existingUser);
+    if (existingUser) {
+      throw new ConflictException('Email already taken');
+    }
+
+    // generate otp
+    const otpCode = OtpService.generateOtp();
+
+    user.otpCode = otpCode;
+    user.otpCreatedAt = new Date();
+
+    await this._userRepository.updateUserById(user);
+
+    await this._mailService.sendUserConfirmation(user, otpCode.toString());
+
+    return user;
   }
 }
