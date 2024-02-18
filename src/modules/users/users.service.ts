@@ -1,4 +1,5 @@
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { Op } from 'sequelize';
 import { UsersFollowing } from 'src/database/models/UsersFollowing.entity';
 import {
   UserRepository,
@@ -73,5 +74,16 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async searchUsers(filter: string) {
+    const users = await this._userRepository.findUsers({
+      [Op.or]: [
+        { fullName: { [Op.like]: `%${filter}%` } },
+        { email: { [Op.like]: `%${filter}%` } },
+      ],
+    });
+
+    return users;
   }
 }
