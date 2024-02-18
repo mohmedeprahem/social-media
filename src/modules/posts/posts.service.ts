@@ -106,4 +106,30 @@ export class PostsService {
 
     return posts;
   }
+
+  async getFollowedUsersPosts(userUuid: string, pageNumber: number = 1) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new Error();
+    }
+
+    const followedUsers = await this._userFollowingRepository.getFollowedUsers(
+      user.id,
+    );
+
+    if (!followedUsers || followedUsers.length === 0) {
+      return [];
+    }
+
+    const posts = await this._postsRepository.getFollowedUsersPosts(
+      followedUsers.map((user) => user.followingUserId),
+      pageNumber,
+      ['user'],
+    );
+
+    return posts;
+  }
 }
