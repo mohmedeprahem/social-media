@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { UsersFollowing } from '../models/UsersFollowing.entity';
-import { WhereOptions } from 'sequelize';
+import { Includeable, WhereOptions } from 'sequelize';
 
 @Injectable()
 export class UserFollowingRepository {
@@ -40,6 +40,20 @@ export class UserFollowingRepository {
       where: {
         userId,
       },
+    });
+  }
+
+  async findUsersFollowings(
+    condition: WhereOptions<any>,
+    include: string[] = [],
+  ): Promise<UsersFollowing[]> {
+    const includeOptions: Includeable[] = include.map((assoc) => ({
+      model: this.usersFollowingModel.associations[assoc].target,
+      as: assoc,
+    }));
+    return await this.usersFollowingModel.findAll({
+      where: condition,
+      include: includeOptions,
     });
   }
 }
