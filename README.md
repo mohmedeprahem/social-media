@@ -1,73 +1,68 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Social Media API
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project is a Social Media API built using NestJS, providing essential functionalities for a social networking platform.
 
-## Installation
+**Technologies**: NestJS, TypeScript, PostgreSQL and JWT.
 
-```bash
-$ npm install
-```
+## Feature
 
-## Running the app
+- **User Authentication**: Secure user authentication mechanisms.
+- **Profile Management**: APIs for managing user profiles, including personal information.
+- **Friend Connections**: Enable users to establish connections with other users.
+- **Post Creation and Interaction**: APIs to support creating posts, liking, commenting, and sharing posts among users.
+- **Privacy Controls**: Basic privacy settings to manage the visibility of user content and interactions.
 
-```bash
-# development
-$ npm run start
+## Documentation
 
-# watch mode
-$ npm run start:dev
+- Deployed on RailWay [here](https://social-media-production-cfb7.up.railway.app/api#/)
+- System Design [here](https://docs.google.com/document/d/1OZB2dP51GcvhMvAlpoQlGYUSN_Z4Ol_4b0mAq9nHrps/edit?usp=sharing)
 
-# production mode
-$ npm run start:prod
-```
+## Getting Started
 
-## Test
+1. **Installation**: Clone the repository and install dependencies.
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+git clone https://github.com/mohmedeprahem/social-media.git
+cd social-media
+npm install
 ```
 
-## Support
+2. **Configuration**: Set up environment variables and configure the database connection in the `.env` file.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```plaintext
+DB_HOST=your database host
+DB_PORT=your database port
+DB_USER=your database username
+DB_PASS=your database password
+DB_NAME= Your database name
+NODE_ENV=development
+SWAGGER_TITLE=any title
+SWAGGER_DESCRIPTION=write description
+MAIL_HOST=type of mail like smtp.gmail.com
+MAIL_USER= your email
+MAIL_PASS= the password of mail service
+JWT_AT_SECRET=Your jwt access secret key
+JWT_RT_SECRET= Your jwt refresh secret key
+JWT_AT_EXPIRES_IN=example '30m'
+JWT_RT_EXPIRES_IN=example '10d'
+PORT=3000
+```
 
-## Stay in touch
+3. **Running the Application**: Start the NestJS application.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+npm run start
+```
+
+4. **Contribution**: Contributions are welcome! If you find any issues or would like to add new features, feel free to open a pull request.
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+This project is licensed under the MIT License.
+
+## Acknowledgements
+
+- Thanks to the NestJS team for providing an excellent framework for building web applications.
+- Special thanks to the contributors of libraries and tools used in this project.
