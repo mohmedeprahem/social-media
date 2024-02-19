@@ -177,9 +177,7 @@ export class AuthService {
       jwtToken.refreshToken,
     );
 
-    await this._userRepository.updateUserById({
-      ...user.dataValues,
-    });
+    await this._userRepository.updateUserById(user);
 
     return jwtToken;
   }
