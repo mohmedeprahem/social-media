@@ -154,4 +154,23 @@ export class UsersService {
 
     return user;
   }
+
+  async getFollowingUsers(userUuid: string) {
+    const user = await this._userRepository.findUser({
+      uuid: userUuid,
+    });
+
+    if (!user) {
+      throw new HttpException(null, 500);
+    }
+
+    const following = await this._userFollowingRepository.findUsersFollowings(
+      {
+        userId: user.id,
+      },
+      ['followingUser'],
+    );
+
+    return following;
+  }
 }
