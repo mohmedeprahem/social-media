@@ -193,4 +193,29 @@ export class UsersController {
       message: 'success',
     });
   }
+
+  @Get('following')
+  @ApiSecurity('access-token')
+  async getFollowingUsers(@Req() req: IGetUserAuthInfoRequest, @Res() res) {
+    const following = await this._usersService.getFollowingUsers(req.user.sub);
+
+    if (!following || following.length === 0) {
+      throw new NotFoundException('Users not found');
+    }
+
+    const successResponse = {
+      success: true,
+      status: 200,
+      message: 'success',
+      users: following.map((user) => ({
+        uuid: user.followingUser.uuid,
+        fullName: user.followingUser.fullName,
+        email: user.followingUser.email,
+      })),
+    };
+
+    return res.status(200).json({
+      ...successResponse,
+    });
+  }
 }
