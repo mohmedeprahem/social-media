@@ -89,7 +89,6 @@ export class AuthService {
     const { email, otpCode, isNewEmail } = verifyUserDto;
     let user: User;
     user = await this._userRepository.findUser({ email });
-    console.log(user);
 
     if (!isNewEmail && !user) throw new NotFoundException('User not found');
 
@@ -130,9 +129,7 @@ export class AuthService {
       jwtToken.refreshToken,
     );
 
-    await this._userRepository.updateUserById({
-      ...user.dataValues,
-    });
+    await this._userRepository.updateUserById(user);
     return jwtToken;
   }
 
